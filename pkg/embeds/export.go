@@ -14,16 +14,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package api
+package embeds
 
 import (
-	"github.com/kube-all/mock-runner/cmd/server/options"
+	"embed"
+	"io/fs"
+	"k8s.io/klog/v2"
+	"net/http"
 )
 
-func AddResource(o *options.Options) {
-	// mocker api server
-	go mock(o)
-	//  mock app server
-	app()
+//go:embed swagger-ui
+var staticFiles embed.FS
 
+func StaticFileSystem() http.FileSystem {
+
+	fsys, err := fs.Sub(staticFiles, "swagger-ui")
+	if err != nil {
+		klog.Fatal(err)
+	}
+	return http.FS(fsys)
 }

@@ -24,10 +24,12 @@ import (
 
 func app() {
 	ws := new(restful.WebService)
-	ws.Route(ws.GET("/index").To(index))
-	restful.Add(ws)
+	container := restful.NewContainer()
+	ws.Route(ws.GET("/").To(index))
+	container.Add(ws)
 	klog.V(1).Infof("mock runner app server will start with port 8081")
-	klog.Fatal(http.ListenAndServe(":8081", nil))
+	server := &http.Server{Addr: ":8081", Handler: container}
+	klog.Fatal("app server",server.ListenAndServe())
 }
 func index(req *restful.Request, resp *restful.Response) {
 	resp.Write([]byte( "this is mock runner app server"))
