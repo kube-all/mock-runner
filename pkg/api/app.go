@@ -17,11 +17,18 @@ limitations under the License.
 package api
 
 import (
-	"github.com/kube-all/mock-runner/cmd/server/options"
+	"github.com/emicklei/go-restful/v3"
+	"k8s.io/klog/v2"
+	"net/http"
 )
 
-func AddResource(o *options.Options) {
-	//  mock app server
-	app()
-	//todo  mocker api server
+func app() {
+	ws := new(restful.WebService)
+	ws.Route(ws.GET("/index").To(index))
+	restful.Add(ws)
+	klog.V(1).Infof("mock runner app server will start with port 8081")
+	klog.Fatal(http.ListenAndServe(":8081", nil))
+}
+func index(req *restful.Request, resp *restful.Response) {
+	resp.Write([]byte( "this is mock runner app server"))
 }

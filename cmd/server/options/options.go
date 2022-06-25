@@ -14,14 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package api
+package options
 
-import (
-	"github.com/kube-all/mock-runner/cmd/server/options"
-)
+type Options struct {
+	Path string
+}
 
-func AddResource(o *options.Options) {
-	//  mock app server
-	app()
-	//todo  mocker api server
+func NewServerOptions() *Options {
+	s := Options{}
+	return &s
 }
