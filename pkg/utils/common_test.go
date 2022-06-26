@@ -14,17 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package api
+package utils
 
 import (
-	"github.com/kube-all/mock-runner/cmd/server/options"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-func AddResource(o *options.Options) {
-	//  mock app server
-	go app()
-	// mocker api server
-	mock(o)
+func TestLoadDirFileData(t *testing.T) {
+	files := LoadDirFileData(".")
+	assert.Lessf(t, 1, len(files), "")
+	for k, v := range files {
+		t.Logf("file name: %s, file content length: %d", k, len(v))
 
-
+	}
 }

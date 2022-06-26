@@ -16,6 +16,14 @@ limitations under the License.
 
 package core
 
+import (
+	"fmt"
+)
+
+const (
+	MIME_JSON = "application/json" // Accept or Content-Type used in Consumes() and/or Produces()
+)
+
 type TypeMeta struct {
 	Kind    string `json:"kind,omitempty" yaml:"kind"`
 	Version string `json:"version,omitempty"`
@@ -55,4 +63,46 @@ type APIParameterDefinition struct {
 	DefaultValue interface{} `json:"defaultValue,omitempty" yaml:"defaultValue"`
 	Type         string      `json:"type,omitempty" yaml:"type"`
 	Required     bool        `json:"required,omitempty" yaml:"required"`
+}
+
+func (def *APIDefinition) DefaultValue() {
+	if len(def.Kind) == 0 {
+		def.Kind = "APIDefinition"
+	}
+	if len(def.Version) == 0 {
+		def.Version = "1.0"
+	}
+	if def.Spec == nil {
+		def.Spec = &APIDefinitionSpec{}
+	}
+	if len(def.Spec.Protocol) == 0 {
+		def.Spec.Protocol = "http"
+	}
+	if len(def.Spec.Consumes) == 0 {
+		def.Spec.Consumes = []string{MIME_JSON}
+	}
+	if len(def.Spec.Produces) == 0 {
+		def.Spec.Produces = []string{MIME_JSON}
+	}
+
+}
+func (def *APIDefinition) Validator() (errs []string) {
+	if def.Kind != "APIDefinition" {
+		errs = append(errs, fmt.Sprint("kind is not APIDefinition"))
+		return
+	}
+	if len(def.Spec.Name) == 0 {
+		errs = append(errs, fmt.Sprint("name is empty"))
+	}
+	if len(def.Spec.Method) == 0 {
+		errs = append(errs, fmt.Sprint("method is empty"))
+	}
+	if len(def.Spec.Path) == 0 {
+		errs = append(errs, fmt.Sprint("path is empty"))
+	}
+	if len(def.Spec.Cases) == 0 {
+		errs = append(errs, fmt.Sprint("cases is empty"))
+	}
+
+	return
 }

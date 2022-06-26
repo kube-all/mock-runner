@@ -30,9 +30,14 @@ func NewServerCommand() *cobra.Command {
 		Example:      "mock server -p={mockdir}",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if len(args) == 1 {
+				s.Path = args[0]
+			}
 			return run(s)
 		},
 	}
+	flags := cmd.Flags()
+	flags.StringVarP(&s.Path, "path", "p", "", "mock repo path")
 	return cmd
 }
 

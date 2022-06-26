@@ -6,6 +6,7 @@ import (
 	"github.com/go-openapi/spec"
 	"github.com/kube-all/mock-runner/cmd/server/options"
 	"github.com/kube-all/mock-runner/pkg/embeds"
+	"github.com/kube-all/mock-runner/pkg/services"
 	"k8s.io/klog/v2"
 	"net/http"
 )
@@ -22,6 +23,12 @@ func mock(o *options.Options) {
 		CookiesAllowed: true,
 		Container:      container}
 	container.Filter(cors.Filter)
+	//load api
+	mockSvc := services.MockServer{
+		Option:    o,
+		Container: container,
+	}
+	mockSvc.LoadAPI()
 	//swagger
 	config := restfulspec.Config{
 		WebServices:                   restful.RegisteredWebServices(), // you control what services are visible
@@ -39,14 +46,8 @@ func mock(o *options.Options) {
 func enrichSwaggerObject(swo *spec.Swagger) {
 	swo.Info = &spec.Info{
 		InfoProps: spec.InfoProps{
-			Title:       "mock runner",
+			Title:       "mock",
 			Description: "An Open Source Http Mock Server",
-			Contact: &spec.ContactInfo{
-				ContactInfoProps: spec.ContactInfoProps{
-					Name:  "kubeall",
-					Email: "kubeall@aliyun.com",
-					URL:   ""},
-			},
 			License: &spec.License{
 				LicenseProps: spec.LicenseProps{
 					Name: "MIT",
@@ -58,4 +59,3 @@ func enrichSwaggerObject(swo *spec.Swagger) {
 	swo.Tags = []spec.Tag{}
 
 }
-
