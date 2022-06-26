@@ -7,8 +7,10 @@ import (
 	"github.com/kube-all/mock-runner/cmd/server/options"
 	"github.com/kube-all/mock-runner/pkg/embeds"
 	"github.com/kube-all/mock-runner/pkg/services"
+	"io/ioutil"
 	"k8s.io/klog/v2"
 	"net/http"
+	"path"
 )
 
 func mock(o *options.Options) {
@@ -29,6 +31,13 @@ func mock(o *options.Options) {
 		Container: container,
 	}
 	mockSvc.LoadAPI()
+	//static
+	staticPath := path.Join(o.Path, "statics")
+	_, err := ioutil.ReadDir(staticPath)
+	if err == nil {
+		klog.Infof("static dir: %s exist, will add static handler", staticPath)
+		http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(staticPath))))
+	}
 	//swagger
 	config := restfulspec.Config{
 		WebServices:                   restful.RegisteredWebServices(), // you control what services are visible
