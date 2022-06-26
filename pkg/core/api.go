@@ -21,8 +21,20 @@ import (
 )
 
 const (
-	MIME_JSON = "application/json" // Accept or Content-Type used in Consumes() and/or Produces()
+	ValueFromPath    = "$request.path."
+	ValueFromQuery   = "$request.query."
+	ValueFromHeader  = "$request.header."
+	ValueFromBody    = "$request.body."
+	ScriptJavaScript = "javascript"
+	ScriptPython     = "python"
+	ScriptLua        = "lua"
+	MIME_XML         = "application/xml"  // Accept or Content-Type used in Consumes() and/or Produces()
+	MIME_JSON        = "application/json" // Accept or Content-Type used in Consumes() and/or Produces()
+	MIME_OCTET       = "application/octet-stream"
+	MIME_FORM        = "multipart/form-data"
+	MIME_X_WWW_FORM  = "application/x-www-form-urlencoded"
 )
+
 
 type TypeMeta struct {
 	Kind    string `json:"kind,omitempty" yaml:"kind"`

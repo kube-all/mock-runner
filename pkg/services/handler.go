@@ -31,9 +31,17 @@ func APIHandler(definition *core.APIDefinition) APIDefinitionHandler {
 	return func(req *restful.Request, resp *restful.Response) () {
 		klog.Infof("APIDefinitionHandler APIDefinition: %s, Method: %s, RequestURI: %s",
 			definition.Spec.Name, req.Request.Method, req.Request.RequestURI)
+		spec := definition.Spec
+		for i := 0; i < len(spec.Cases); i++ {
+			apiCase := spec.Cases[i]
+			//if matched return
+			if apiCase.Condition.Simple.Pass(req) {
+				resp.Write([]byte("condition passed"))
+				return
+			}
 
+		}
 		resp.WriteHeader(http.StatusNotImplemented)
 		resp.Write([]byte("your request not match any case"))
 	}
-
 }

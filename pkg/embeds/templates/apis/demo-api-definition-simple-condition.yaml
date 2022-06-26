@@ -22,5 +22,11 @@ spec:
   method: get
   path: /api/v1/demo
   cases:
-  - condition: {}
+  - condition:
+      simple:
+        logicAnd: true
+        items:
+        - valueFrom: $request.query.query
+          operator: =
+          value: query-value
     response: {}

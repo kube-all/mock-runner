@@ -38,6 +38,16 @@ func TestSimpleConditionAPIDefinition(t *testing.T) {
 			Cases: []*CaseService{
 				{
 					Condition: &Condition{
+						Simple: &SimpleCondition{
+							LogicAnd: true,
+							Items: []*AssertItem{
+								{
+									ValueFrom: "$request.query.query",
+									Value:     "query-value",
+									Operator:  "=",
+								},
+							},
+						},
 					},
 					Response: &Response{
 					},
