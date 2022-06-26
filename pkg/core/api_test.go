@@ -20,6 +20,7 @@ import (
 	"github.com/emicklei/go-restful/v3"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"testing"
 )
@@ -42,7 +43,7 @@ func TestSimpleConditionAPIDefinition(t *testing.T) {
 							LogicAnd: true,
 							Items: []*AssertItem{
 								{
-									ValueFrom: "$request.query.query",
+									ValueFrom: "$request.query.key",
 									Value:     "query-value",
 									Operator:  "=",
 								},
@@ -50,11 +51,16 @@ func TestSimpleConditionAPIDefinition(t *testing.T) {
 						},
 					},
 					Response: &Response{
+						Simple: &SimpleResponse{
+							Header: map[string]string{"header1": "values"},
+							Code:   http.StatusOK,
+							Body:   SimpleResponseBody{Content: "mock response is return success"},
+						},
 					},
 				},
 			},
 			Parameters: []APIParameterDefinition{
-				{Position: "query", Name: "query", Description: "query param", Type: "string"},
+				{Position: "query", Name: "key", Description: "query param", Type: "string"},
 			},
 		},
 	}

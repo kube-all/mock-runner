@@ -18,7 +18,10 @@ package server
 import (
 	"github.com/kube-all/mock-runner/cmd/server/options"
 	"github.com/kube-all/mock-runner/pkg/api"
+	"github.com/kube-all/mock-runner/pkg/global"
+	"github.com/kube-all/mock-runner/pkg/utils"
 	"github.com/spf13/cobra"
+	"path"
 )
 
 func NewServerCommand() *cobra.Command {
@@ -43,6 +46,11 @@ func NewServerCommand() *cobra.Command {
 
 // run will load mock api and start http server
 func run(o *options.Options) (err error) {
+	// load mock data
+	datas := utils.LoadDirFileData(path.Join(o.Path, "datas"))
+	for k, v := range datas {
+		global.MockData.Store(k, v)
+	}
 	api.AddResource(o)
 	return err
 }

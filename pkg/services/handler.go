@@ -36,7 +36,12 @@ func APIHandler(definition *core.APIDefinition) APIDefinitionHandler {
 			apiCase := spec.Cases[i]
 			//if matched return
 			if apiCase.Condition.Simple.Pass(req) {
-				resp.Write([]byte("condition passed"))
+				response := apiCase.Response.Simple.GetResponse()
+				resp.WriteHeader(response.Code)
+				for k, v := range response.Header {
+					resp.AddHeader(k, v)
+				}
+				resp.Write(response.Body)
 				return
 			}
 

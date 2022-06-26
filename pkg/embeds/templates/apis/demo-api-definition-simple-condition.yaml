@@ -13,7 +13,7 @@ spec:
   deprecated: false
   parameters:
   - position: query
-    name: query
+    name: key
     description: query param
     defaultValue: null
     type: string
@@ -26,7 +26,13 @@ spec:
       simple:
         logicAnd: true
         items:
-        - valueFrom: $request.query.query
+        - valueFrom: $request.query.key
           operator: =
           value: query-value
-    response: {}
+    response:
+      simple:
+        code: 200
+        header:
+          header1: values
+        body:
+          content: mock response is return success
