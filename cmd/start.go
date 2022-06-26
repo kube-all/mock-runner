@@ -27,7 +27,7 @@ import (
 
 func commandRoot() *cobra.Command {
 	rootCmd := &cobra.Command{
-		Use:  "mock-runner",
+		Use:  "mock",
 		Long: `http api mock server`,
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Help()

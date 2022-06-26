@@ -25,9 +25,9 @@ func NewServerCommand() *cobra.Command {
 	s := options.NewServerOptions()
 	cmd := &cobra.Command{
 		Use:          "server",
-		Long:         `mock-runner`,
-		Short:        "mock-runner server ",
-		Example:      "mock-runner server -p={mockdir}",
+		Long:         `mock`,
+		Short:        "mock server ",
+		Example:      "mock server -p={mockdir}",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return run(s)

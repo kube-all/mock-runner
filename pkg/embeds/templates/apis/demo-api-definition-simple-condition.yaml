@@ -1,0 +1,26 @@
+kind: APIDefinition
+version: "1.0"
+spec:
+  name: api demo simple condition
+  description: this is APIDefinition demo simple condition
+  consumes:
+  - application/json
+  - application/xml
+  produces:
+  - application/json
+  - application/xml
+  tags: []
+  deprecated: false
+  parameters:
+  - position: query
+    name: query
+    description: query param
+    defaultValue: null
+    type: string
+    required: false
+  protocol: http
+  method: get
+  path: /api/v1/demo
+  cases:
+  - condition: {}
+    response: {}
