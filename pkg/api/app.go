@@ -18,19 +18,26 @@ package api
 
 import (
 	"github.com/emicklei/go-restful/v3"
+	"github.com/kube-all/mock-runner/pkg/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"k8s.io/klog/v2"
 	"net/http"
 )
 
 func app() {
+	prometheus.Init()
 	ws := new(restful.WebService)
 	container := restful.NewContainer()
 	ws.Route(ws.GET("/").To(index))
+	ws.Route(ws.GET("/metrics").To(metrics))
 	container.Add(ws)
 	klog.V(1).Infof("mock app server will start with port 8081")
 	server := &http.Server{Addr: ":8081", Handler: container}
-	klog.Fatal("app server",server.ListenAndServe())
+	klog.Fatal("app server", server.ListenAndServe())
 }
 func index(req *restful.Request, resp *restful.Response) {
 	resp.Write([]byte( "this is mock app server"))
+}
+func metrics(req *restful.Request, resp *restful.Response) {
+	promhttp.Handler().ServeHTTP(resp.ResponseWriter, req.Request)
 }

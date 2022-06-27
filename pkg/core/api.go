@@ -18,6 +18,7 @@ package core
 
 import (
 	"fmt"
+	"strings"
 )
 
 const (
@@ -34,7 +35,6 @@ const (
 	MIME_FORM        = "multipart/form-data"
 	MIME_X_WWW_FORM  = "application/x-www-form-urlencoded"
 )
-
 
 type TypeMeta struct {
 	Kind    string `json:"kind,omitempty" yaml:"kind"`
@@ -115,6 +115,25 @@ func (def *APIDefinition) Validator() (errs []string) {
 	if len(def.Spec.Cases) == 0 {
 		errs = append(errs, fmt.Sprint("cases is empty"))
 	}
-
+	for _, c := range def.Spec.Cases {
+		//condition can be empty
+		if c.Response == nil {
+			errs = append(errs, "response is empty ")
+			continue
+		}
+		for _, item := range c.Condition.Simple.Items {
+			if !(strings.HasPrefix(item.ValueFrom, ValueFromPath) ||
+				strings.HasPrefix(item.ValueFrom, ValueFromQuery) ||
+				strings.HasPrefix(item.ValueFrom, ValueFromHeader) ||
+				strings.HasPrefix(item.ValueFrom, ValueFromBody)) {
+				errs = append(errs,
+					fmt.Sprintf("simple condition support: %s,%s,%s,%s; unsupport value from: %s",
+						ValueFromBody, ValueFromQuery, ValueFromHeader, ValueFromPath, item.ValueFrom))
+			}
+			if _, ok := AssertFunctions[item.Operator]; !ok {
+				errs = append(errs, fmt.Sprintf("simple condition upsurpport operator: %s", item.Operator))
+			}
+		}
+	}
 	return
 }

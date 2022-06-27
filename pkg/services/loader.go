@@ -22,6 +22,7 @@ import (
 	"github.com/emicklei/go-restful/v3"
 	"github.com/kube-all/mock-runner/cmd/server/options"
 	"github.com/kube-all/mock-runner/pkg/core"
+	"github.com/kube-all/mock-runner/pkg/prometheus"
 	"github.com/kube-all/mock-runner/pkg/utils"
 	"gopkg.in/yaml.v3"
 	"k8s.io/klog/v2"
@@ -42,6 +43,7 @@ func (m *MockServer) LoadAPI() {
 		err error
 	)
 	for apiPath, data := range apiMap {
+		prometheus.ApiTotal.Add(1)
 		var api core.APIDefinition
 		if strings.HasSuffix(apiPath, ".json") {
 			err = json.Unmarshal(data, &api)
@@ -96,6 +98,8 @@ func (m *MockServer) LoadAPI() {
 		if api.Spec.Method == http.MethodPatch || api.Spec.Method == http.MethodPost || api.Spec.Method == http.MethodPut {
 		}
 		ws.Route(rb.To(restful.RouteFunction(APIHandler(&api))))
+		// 增加计数
+		prometheus.ApiSuccessTotal.Add(1)
 	}
 	m.Container.Add(ws)
 }
