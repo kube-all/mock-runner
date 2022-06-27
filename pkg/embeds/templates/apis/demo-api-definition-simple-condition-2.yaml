@@ -1,0 +1,39 @@
+kind: APIDefinition
+version: "1.0"
+spec:
+  name: api demo simple condition
+  description: this is APIDefinition demo simple condition
+  consumes:
+  - application/json
+  - application/xml
+  produces:
+  - application/json
+  - application/xml
+  tags:
+  - demo
+  deprecated: false
+  parameters:
+  - position: query
+    name: key
+    description: query param
+    defaultValue: null
+    type: string
+    required: false
+  protocol: http
+  method: get
+  path: /api/v1/demo2
+  cases:
+  - condition:
+      simple:
+        logicAnd: true
+        items:
+        - valueFrom: $request.query.key
+          operator: =
+          value: query-value
+    response:
+      simple:
+        code: 200
+        header:
+          header1: values
+        body:
+          content: mock response is return success

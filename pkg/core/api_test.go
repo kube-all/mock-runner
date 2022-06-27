@@ -36,7 +36,7 @@ func TestSimpleConditionAPIDefinition(t *testing.T) {
 			Protocol:    "http",
 			Method:      "get",
 			Path:        "/api/v1/demo",
-			Tags: []string{"demo"},
+			Tags:        []string{"demo"},
 			Cases: []*CaseService{
 				{
 					Condition: &Condition{

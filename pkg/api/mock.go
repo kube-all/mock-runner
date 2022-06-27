@@ -5,6 +5,7 @@ import (
 	"github.com/emicklei/go-restful/v3"
 	"github.com/go-openapi/spec"
 	"github.com/kube-all/mock-runner/cmd/server/options"
+	"github.com/kube-all/mock-runner/pkg/core"
 	"github.com/kube-all/mock-runner/pkg/embeds"
 	"github.com/kube-all/mock-runner/pkg/services"
 	"gopkg.in/yaml.v2"
@@ -43,7 +44,7 @@ func mock(o *options.Options) {
 	config := restfulspec.Config{
 		WebServices:                   restful.RegisteredWebServices(), // you control what services are visible
 		APIPath:                       "/apidocs.json",
-		PostBuildSwaggerObjectHandler: enrichSwaggerObject(mockSvc.Config.Tags),
+		PostBuildSwaggerObjectHandler: enrichSwaggerObject(mockSvc.Config),
 	}
 	restful.DefaultContainer.Add(restfulspec.NewOpenAPIService(config))
 	http.Handle("/swagger/", http.StripPrefix("/swagger/", http.FileServer(embeds.StaticFileSystem())))
@@ -52,22 +53,24 @@ func mock(o *options.Options) {
 	klog.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func enrichSwaggerObject(tags map[string]string) restfulspec.PostBuildSwaggerObjectFunc {
+func enrichSwaggerObject(config core.Config) restfulspec.PostBuildSwaggerObjectFunc {
 	return func(swo *spec.Swagger) {
 		swo.Info = &spec.Info{
 			InfoProps: spec.InfoProps{
-				Title:       "mock",
-				Description: "An Open Source Http Mock Server",
-				License: &spec.License{
-					LicenseProps: spec.LicenseProps{
-						Name: "MIT",
-						URL:  "http://mit.org"},
+				Title:       config.Title,
+				Description: config.Description,
+				Contact: &spec.ContactInfo{
+					ContactInfoProps: spec.ContactInfoProps{
+						Name:  config.ContactName,
+						URL:   config.ContactURL,
+						Email: config.ContactEmail,
+					},
 				},
-				Version: "v1.0.0",
+				Version: config.Version,
 			},
 		}
 		swo.Tags = []spec.Tag{}
-		for k, v := range tags {
+		for k, v := range config.Tags {
 			swo.Tags = append(swo.Tags, spec.Tag{
 				TagProps: spec.TagProps{
 					Name:        k,

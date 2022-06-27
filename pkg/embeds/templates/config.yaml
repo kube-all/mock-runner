@@ -1,4 +1,8 @@
-
-
 tags:
-  demo: demo tag for api
+    demo: demo tag for api
+title: demo mock
+description: this is demo mock project
+version: 1.0.0
+contactName: demo
+contactUrl: ""
+contactEmail: demo@email.com
