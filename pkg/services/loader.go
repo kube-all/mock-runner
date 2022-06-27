@@ -34,6 +34,7 @@ import (
 type MockServer struct {
 	Option    *options.Options
 	Container *restful.Container
+	Config    core.Config
 }
 
 func (m *MockServer) LoadAPI() {

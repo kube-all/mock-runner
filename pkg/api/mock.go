@@ -7,8 +7,11 @@ import (
 	"github.com/kube-all/mock-runner/cmd/server/options"
 	"github.com/kube-all/mock-runner/pkg/embeds"
 	"github.com/kube-all/mock-runner/pkg/services"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"k8s.io/klog/v2"
 	"net/http"
+	"path"
 )
 
 func mock(o *options.Options) {
@@ -23,17 +26,24 @@ func mock(o *options.Options) {
 		CookiesAllowed: true,
 		Container:      container}
 	container.Filter(cors.Filter)
+
 	//load api
 	mockSvc := services.MockServer{
 		Option:    o,
 		Container: container,
 	}
+	if data, err := ioutil.ReadFile(path.Join(o.Path, "config.yaml")); err == nil {
+		yaml.Unmarshal(data, &mockSvc.Config)
+	} else {
+		klog.Warningf("can't get config from path: %s, err: %s", path.Join(o.Path, "config.yaml"), err.Error())
+	}
 	mockSvc.LoadAPI()
+
 	//swagger
 	config := restfulspec.Config{
 		WebServices:                   restful.RegisteredWebServices(), // you control what services are visible
 		APIPath:                       "/apidocs.json",
-		PostBuildSwaggerObjectHandler: enrichSwaggerObject,
+		PostBuildSwaggerObjectHandler: enrichSwaggerObject(mockSvc.Config.Tags),
 	}
 	restful.DefaultContainer.Add(restfulspec.NewOpenAPIService(config))
 	http.Handle("/swagger/", http.StripPrefix("/swagger/", http.FileServer(embeds.StaticFileSystem())))
@@ -42,20 +52,28 @@ func mock(o *options.Options) {
 	klog.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-//enrichSwaggerObject
-func enrichSwaggerObject(swo *spec.Swagger) {
-	swo.Info = &spec.Info{
-		InfoProps: spec.InfoProps{
-			Title:       "mock",
-			Description: "An Open Source Http Mock Server",
-			License: &spec.License{
-				LicenseProps: spec.LicenseProps{
-					Name: "MIT",
-					URL:  "http://mit.org"},
+func enrichSwaggerObject(tags map[string]string) restfulspec.PostBuildSwaggerObjectFunc {
+	return func(swo *spec.Swagger) {
+		swo.Info = &spec.Info{
+			InfoProps: spec.InfoProps{
+				Title:       "mock",
+				Description: "An Open Source Http Mock Server",
+				License: &spec.License{
+					LicenseProps: spec.LicenseProps{
+						Name: "MIT",
+						URL:  "http://mit.org"},
+				},
+				Version: "v1.0.0",
 			},
-			Version: "v1.0.0",
-		},
+		}
+		swo.Tags = []spec.Tag{}
+		for k, v := range tags {
+			swo.Tags = append(swo.Tags, spec.Tag{
+				TagProps: spec.TagProps{
+					Name:        k,
+					Description: v,
+				},
+			})
+		}
 	}
-	swo.Tags = []spec.Tag{}
-
 }

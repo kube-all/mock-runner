@@ -9,7 +9,8 @@ spec:
   produces:
   - application/json
   - application/xml
-  tags: []
+  tags:
+  - demo
   deprecated: false
   parameters:
   - position: query
