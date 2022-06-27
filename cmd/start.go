@@ -18,6 +18,7 @@ package main
 
 import (
 	"flag"
+	"github.com/kube-all/mock-runner/cmd/scaffold"
 	"github.com/kube-all/mock-runner/cmd/server"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -42,6 +43,7 @@ func commandRoot() *cobra.Command {
 
 	// add sub command
 	rootCmd.AddCommand(server.NewServerCommand())
+	rootCmd.AddCommand(scaffold.NewScaffoldCommand())
 	return rootCmd
 }
 

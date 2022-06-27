@@ -1,0 +1,1 @@
+# this dir save statics files

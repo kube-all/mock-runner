@@ -14,26 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package embeds
+package options
 
-import (
-	"embed"
-	"io/fs"
-	"k8s.io/klog/v2"
-	"net/http"
-)
+type ScaffoldOptions struct {
+	Project string
+}
 
-//go:embed templates
-var ProjectTemplate embed.FS
+func NewScaffoldOptions() *ScaffoldOptions {
+	s := ScaffoldOptions{}
 
-//go:embed swagger-ui
-var staticFiles embed.FS
-
-func StaticFileSystem() http.FileSystem {
-
-	fsys, err := fs.Sub(staticFiles, "swagger-ui")
-	if err != nil {
-		klog.Fatal(err)
-	}
-	return http.FS(fsys)
+	return &s
 }
